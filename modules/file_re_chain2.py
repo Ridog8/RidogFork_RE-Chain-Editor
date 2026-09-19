@@ -7,8 +7,9 @@ VERSION_DD2 = 4
 VERSION_DR = 9
 VERSION_MHWILDS = 12#Beta
 VERSION_MHS3 = 15
+VERSION_ONIMUSHA = 17
 
-supportedVersionSet = set([4,9,12,13,14,15])
+supportedVersionSet = set([4,9,12,13,14,15,17])
 
 #---CHAIN STRUCTS---#
 class SIZE_DATA():
@@ -34,6 +35,10 @@ class SIZE_DATA():
 			self.CHAIN_SETTING_SIZE = 184
 			self.CHAIN_LINK_SIZE = 40
 
+		# Onimusha removes the old collisionAttr/extraData offsets
+		if version >= VERSION_ONIMUSHA:
+			self.HEADER_SIZE = 112
+
 
 class Chain2HeaderData():
 	def __init__(self):
@@ -51,6 +56,7 @@ class Chain2HeaderData():
 		self.chainFreeLinkOffset = 0
 		self.chainSettingsOffset = 0
 		self.chainWindSettingsOffset = 0
+		self.chain2LODFilePathOffset = 0#VERSION 17
 		self.chainGroupCount = 0
 		self.chainSettingsCount = 0
 		self.chainModelCollisionCount = 0
@@ -94,14 +100,22 @@ class Chain2HeaderData():
 			raiseWarning("Unsupported chain version " + str(self.version) + ", file may not load correctly.")
 		self.errFlags = read_uint(file)#ENUM
 		self.masterSize = read_uint(file)
-		self.collisionAttrAssetOffset = read_uint64(file)
+		if version < VERSION_ONIMUSHA:
+			self.collisionAttrAssetOffset = read_uint64(file)
+		else:
+			self.collisionAttrAssetOffset = 0
 		self.chainModelCollisionOffset = read_uint64(file)
-		self.extraDataOffset = read_uint64(file)
+		if version < VERSION_ONIMUSHA:
+			self.extraDataOffset = read_uint64(file)
+		else:
+			self.extraDataOffset = 0
 		self.chainGroupOffset = read_uint64(file)
 		self.chainLinkOffset = read_uint64(file)
 		self.chainFreeLinkOffset = read_uint64(file)
 		self.chainSettingsOffset = read_uint64(file)
 		self.chainWindSettingsOffset = read_uint64(file)
+		if version >= VERSION_ONIMUSHA:
+			self.chain2LODFilePathOffset = read_uint64(file)
 		self.chainGroupCount = read_ubyte(file)
 		self.chainSettingsCount = read_ubyte(file)
 		self.chainModelCollisionCount = read_ubyte(file)
@@ -131,8 +145,9 @@ class Chain2HeaderData():
 			self.wilds_unkn1 = read_ubyte(file)
 			self.wilds_unkn2 = read_ubyte(file)
 			self.padding0 = read_ushort(file)
-			self.padding1 = read_uint(file)
-			self.padding2 = read_uint(file)
+			if version < VERSION_ONIMUSHA:
+				self.padding1 = read_uint(file)
+				self.padding2 = read_uint(file)
 		
 	def write(self,file):
 		version = self.version
@@ -140,14 +155,18 @@ class Chain2HeaderData():
 		write_uint(file, self.magic)
 		write_uint(file, self.errFlags)#ENUM
 		write_uint(file, self.masterSize)
-		write_uint64(file, self.collisionAttrAssetOffset)
+		if version < VERSION_ONIMUSHA:
+			write_uint64(file, self.collisionAttrAssetOffset)
 		write_uint64(file, self.chainModelCollisionOffset)
-		write_uint64(file, self.extraDataOffset)
+		if version < VERSION_ONIMUSHA:
+			write_uint64(file, self.extraDataOffset)
 		write_uint64(file, self.chainGroupOffset)
 		write_uint64(file, self.chainLinkOffset)
 		write_uint64(file, self.chainFreeLinkOffset)
 		write_uint64(file, self.chainSettingsOffset)
 		write_uint64(file, self.chainWindSettingsOffset)
+		if version >= VERSION_ONIMUSHA:
+			write_uint64(file, self.chain2LODFilePathOffset)
 		write_ubyte(file, self.chainGroupCount)
 		write_ubyte(file, self.chainSettingsCount)
 		write_ubyte(file, self.chainModelCollisionCount)
@@ -177,8 +196,9 @@ class Chain2HeaderData():
 			write_ubyte(file, self.wilds_unkn1)
 			write_ubyte(file, self.wilds_unkn2)
 			write_ushort(file, self.padding0)
-			write_uint(file, self.padding1)
-			write_uint(file, self.padding2)
+			if version < VERSION_ONIMUSHA:
+				write_uint(file, self.padding1)
+				write_uint(file, self.padding2)
 			
 	def __str__(self):
 		return str(self.__class__) + ": " + str(self.__dict__)

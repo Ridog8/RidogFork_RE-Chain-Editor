@@ -168,7 +168,7 @@ class ImportREChain(bpy.types.Operator, ImportHelper):
 		return {'RUNNING_MODAL'}
 
 supportedChainVersions = set([55,54,53,48,52,39,46,24,44,21])		
-supportedChain2Versions = set([4,9,12,13,14,15])
+supportedChain2Versions = set([4,9,12,13,14,15,17])
 def update_targetChainCollection(self,context):
 	temp = bpy.data.screens.get("temp")
 	browserSpace = None
@@ -193,7 +193,7 @@ class ExportREChain(bpy.types.Operator, ExportHelper):
 		name="",
 		description="Set which game to export the chain for",
 		items=[ (".55", "Pragmata", "Pragmata"),
-				(".55", "Dragon's Dogma 2", "Dragon's Dogma 2"),
+				(".54", "Dragon's Dogma 2", "Dragon's Dogma 2"),
 				(".53", "Resident Evil 4 Remake", "Resident Evil 4 Remake"),
 				(".48", "Monster Hunter Rise", "Monster Hunter Rise"),
 				(".52", "Street Fighter 6", "Street Fighter 6"),
@@ -495,6 +495,7 @@ class ExportREChain2(bpy.types.Operator, ExportHelper):
 				(".9", "Dead Rising", "Dead Rising"),
 				(".14", "Monster Hunter Wilds", "Monster Hunter Wilds"),
 				(".15", "Resident Evil 9 / Monster Hunter Stories 3", "Resident Evil 9 / Monster Hunter Stories 3"),
+				(".17", "Onimusha: WoTS", "Onimusha: WoTS"),
 			   ],
 		default = ".14"
 		)
@@ -512,7 +513,7 @@ class ExportREChain2(bpy.types.Operator, ExportHelper):
 					self.filepath = self.targetCollection.split(".chain")[0]+".chain2" + self.filename_ext
 					
 				
-		if context.scene.get("REChainLastImportedChain2Version",0) in supportedChainVersions:
+		if context.scene.get("REChainLastImportedChain2Version",0) in supportedChain2Versions:
 			if context.scene["REChainLastImportedChain2Version"] == 12:
 				#MH Wilds beta fix
 				context.scene["REChainLastImportedChain2Version"] = 14
