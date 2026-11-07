@@ -193,7 +193,7 @@ class ExportREChain(bpy.types.Operator, ExportHelper):
 		name="",
 		description="Set which game to export the chain for",
 		items=[ (".55", "Pragmata", "Pragmata"),
-				(".54", "Dragon's Dogma 2", "Dragon's Dogma 2"),
+				(".55", "Dragon's Dogma 2", "Dragon's Dogma 2"),
 				(".53", "Resident Evil 4 Remake", "Resident Evil 4 Remake"),
 				(".48", "Monster Hunter Rise", "Monster Hunter Rise"),
 				(".52", "Street Fighter 6", "Street Fighter 6"),
